@@ -3,7 +3,7 @@
 import csv, struct
 
 #with open('Jeux_de_Donnees/n100m30_1.dat', 'r') as csvfile:
-with open('n100m5_1.dat', 'r') as csvfile:
+with open('Jeux_de_Donnees/n100m5_1.dat', 'r') as csvfile:
 	reader = csv.reader(csvfile, delimiter=' ')
 	init = reader.__next__()
 	init[:] = [int(item) for item in init if item != '']
