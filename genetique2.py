@@ -80,6 +80,20 @@ def repair_solution(solution) :
 				break
 	#print("solution viable     : " + str(solution))
 	
+	"""
+	#amélioration de la solution
+	for j in range(0,10):
+		#on ajoute l'objet 
+		i = random.randint(0,len(solution) -1)
+		if solution[0][i] == 0 : 
+			solution[0][i] = 1
+			#on recalcule la solution
+			calculate_weight(solution)
+		#si la solution est toujours viable, on garde, sinon on annule
+		if check_viability(solution) == False : 
+				solution[0][i] = 0
+				calculate_weight(solution)
+	"""
 	
 	return solution
 
@@ -115,7 +129,7 @@ def make_children(parents,childrens) :
 	"""
 	
 	#mutation aléatoire
-	for i in range(0,30) : 
+	for i in range(0,15) : 
 		already_exist = 1 
 		while already_exist == 1  : 
 			already_exist = 0 #0=false
@@ -134,10 +148,10 @@ def make_children(parents,childrens) :
 	childrens.append(children)
 	
 #générer la population initiale	
-pop = generate(nbobjet,100)
+pop = generate(nbobjet,300)
 
 
-for z in range(0,5000):
+for z in range(0,1000):
 	#debug
 	"""
 	for elem in pop :
@@ -191,10 +205,11 @@ for z in range(0,5000):
 		#classer la nouvelle population
 	pop = list(sorted(pop,key=lambda l:l[2], reverse = True))
 	pop = list(pop[0:-35])
-	#print("génération "+str(z)+" ; taille : " + str(len(pop)) )
-
+	
+	print("génération "+str(z)+" ; taille : " + str(len(pop)) )
+	print("meilleure solution :" + str(pop[0][2]) )
+	
 	#print("meilleure solution :" + str(pop[0][2]) )
-print("meilleure solution :" + str(pop[0][2]) )
 	
 	#recommencer
 
