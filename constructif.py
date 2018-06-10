@@ -193,7 +193,7 @@ def optimisation ():
 
 ##definition des variables globales		
 global nbobjet, nbcont, contraintes, objets
-nbobjet, nbcont, contraintes, objets = parsefile("Jeux_de_Donnees/n100m10_11.dat",addid=True)
+nbobjet, nbcont, contraintes, objets = parsefile("Jeux_de_Donnees/n100m5_1.dat",addid=True)
 #debug
 """
 for elem in objets :
