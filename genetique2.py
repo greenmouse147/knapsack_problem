@@ -84,7 +84,7 @@ def repair_solution(solution) :
 
 	
 #générer la population initiale	
-pop = generate(nbobjet,30)
+pop = generate(nbobjet,50)
 
 #debug
 """
@@ -108,11 +108,16 @@ for elem in pop :
 #séléctionner l'élite
 	##classement des solutions
 pop = list(sorted(pop,key=lambda l:l[2], reverse = True))
-for elem in pop :
-	print(elem)
+
+parents=list(pop[0:10])
 
 #selectionner les chanceux
+for i in range (0,10):	
+	parents.append( pop[random.randint(10,len(pop)-1)] )
 
+for elem in parents : 
+	print(elem)
+print(len(parents))
 #Créer les enfants
 
 #Vérifier les enfants
