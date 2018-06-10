@@ -194,9 +194,12 @@ def optimisation ():
 ##definition des variables globales		
 global nbobjet, nbcont, contraintes, objets
 nbobjet, nbcont, contraintes, objets = parsefile("Jeux_de_Donnees/n100m10_11.dat",addid=True)
+#debug
+"""
 for elem in objets :
 	print(elem)
-input()
+	input()
+"""
 #nbobjet, nbcont, contraintes, objets = parsefile("Jeux_de_Donnees/n100m5_1.dat",addid=True)
 #Structure objet :
 	#[id, Valeur, c1, ..... cn, Rendement]
@@ -255,7 +258,7 @@ print("Matrice des objets pris : ",res)
 print("valeur de la solution initiale : ",valsolution)
 print("Capacité restante :")
 print(contraintes)
-input("test")
+#input("test")
 
 print("\n\n\nOptimisation :")
 optimisation()
