@@ -51,7 +51,7 @@ def parsefile(nomfichier, addid=False) :
 			for i in range(0,(nbval//10)) :
 				row = reader.__next__()
 				row[:] = [int(item) for item in row if item != '']
-				print(row) 
+				#print(row) 
 				for item in row :
 					#print(k)
 					#print(j)
@@ -59,7 +59,7 @@ def parsefile(nomfichier, addid=False) :
 					
 					objets[j][k] = item	
 					j+=1	
-			print("fin de packet")
+			#print("fin de packet")
 		#print(objets)
 		
 		
