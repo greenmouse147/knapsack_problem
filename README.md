@@ -2,7 +2,7 @@
 Implémentation python du problème du sac a dos multimensionnel (Multidimensional Knapsack problem - MKP)
 
 Deux approches :
-* Algorithme constructif ( glouton) 
+* Algorithme constructif
 * Algorithme génetique
 
 # Installation 
