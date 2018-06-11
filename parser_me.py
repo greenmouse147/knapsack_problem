@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
-import csv, struct
+import csv
+import struct
 
 
 def parsefile(nomfichier, addid=False) :

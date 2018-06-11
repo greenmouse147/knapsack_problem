@@ -1,12 +1,18 @@
-#codding : utf-8
+#coding : utf-8
+
 from parser_me import parsefile
 import random
+import time
+import matplotlib.pyplot as plt
+
+start_time = time.time()
 
 global nbobjet, nbcont, contraintes, objets
 nbobjet, nbcont, contraintes, objets = parsefile("Jeux_de_Donnees/n100m5_1.dat",addid=True)
 #print(objets)
 #Constantes 
 #contrainte initiale
+
 global _CONTRAINTES_INITIALES
 _CONTRAINTES_INITIALES = list(contraintes)
 
@@ -16,7 +22,6 @@ _CONTRAINTES_INITIALES = list(contraintes)
 
 def generate(nbobjet,popSize):
 	pop = [[[random.randint(0,1) for i in range(nbobjet)]] for j in range(popSize)]
-	#print pop
 	return pop
 
 def check_viability(solution) : 
@@ -58,7 +63,25 @@ def calculate_weight(solution) :
 		solution[2] = valeur_solution
 	except IndexError :
 		solution.append(valeur_solution)
-		
+	
+def recalculate_weight(solution,added_object, action="add"):
+	
+	if action == "add" : 
+		#calcul de poids de la solution
+		for j in range (len(solution[1])) : 
+			solution[1][j] += objets[added_object][j+2]
+						
+		#calcul de la valeur de la solution 
+		solution[2] += objets[added_object][1]
+	
+	elif action == "remove" :
+		#calcul de poids de la solution
+		for j in range (len(solution[1])) : 
+			solution[1][j] -= objets[added_object][j+2]
+						
+		#calcul de la valeur de la solution 
+		solution[2] -= objets[added_object][1]
+
 def repair_solution(solution) : 
 	#global nbviable #debug 
 
@@ -80,20 +103,20 @@ def repair_solution(solution) :
 				break
 	#print("solution viable     : " + str(solution))
 	
-	"""
+	
 	#amélioration de la solution
-	for j in range(0,10):
-		#on ajoute l'objet 
-		i = random.randint(0,len(solution) -1)
-		if solution[0][i] == 0 : 
-			solution[0][i] = 1
-			#on recalcule la solution
-			calculate_weight(solution)
-		#si la solution est toujours viable, on garde, sinon on annule
-		if check_viability(solution) == False : 
-				solution[0][i] = 0
-				calculate_weight(solution)
-	"""
+	#on ajoute l'objet 
+	i = random.randint(0,len(solution) -1)
+	
+	if solution[0][i] == 0 : 
+		solution[0][i] = 1
+		#on recalcule la solution
+		recalculate_weight(solution,i,action="add")
+	#si la solution est toujours viable, on garde, sinon on annule
+	if check_viability(solution) == False : 
+			solution[0][i] = 0
+			recalculate_weight(solution,i,action="remove")
+	
 	
 	return solution
 
@@ -129,7 +152,7 @@ def make_children(parents,childrens) :
 	"""
 	
 	#mutation aléatoire
-	for i in range(0,15) : 
+	for i in range(0,2) : 
 		already_exist = 1 
 		while already_exist == 1  : 
 			already_exist = 0 #0=false
@@ -146,12 +169,45 @@ def make_children(parents,childrens) :
 					break
 	
 	childrens.append(children)
+
+def make_children_2(parents,childrens):
+	"""
+	Takes 2 binary lists and with probablity pX performs uniform crossover at probability pU to produce a list of 2 new binary lists.
+	"""
+	#selectoner parents random
+	parentA = parents.pop(random.randint(0,len(parents)-1))
+	parentB = parents.pop(random.randint(0,len(parents)-1))
+
+	childA = parentA[:]
+	childB = parentB[:]
+	#print(childA)
+	if 1 > random.random():
+		for i in range(len(parentA[0])):
+			if (random.randint(0,1000)%1) == 1:
+				childA[0][i] = parentB[0][i]
+				childB[0][i] = parentA[0][i]
 	
-#générer la population initiale	
-pop = generate(nbobjet,300)
+	childrens.append(childA)
+	childrens.append(childB)
+	
+max_generations = 10000
+max_time = 10
+P = 50 # Population size
+E = 6 # number of Elites
+C = 4 # lucky guys
 
 
-for z in range(0,1000):
+#input("Cliquez sur 'Enter' pour lancer le programme (1minute)")
+#générer la population initiale
+pop = generate(nbobjet,P)
+
+#compteur de génération 
+z = 0
+#data
+Generation = []
+Results = []
+print("Calcul genetique : "+ str(max_time/60) +" minute. Veuillez patienter..", flush=True)
+while 1 : 
 	#debug
 	"""
 	for elem in pop :
@@ -169,47 +225,63 @@ for z in range(0,1000):
 		print(check_viability(elem))
 		print(elem)
 	"""
-		
+
 	#séléctionner l'élite
 		##classement des solutions
 	pop = list(sorted(pop,key=lambda l:l[2], reverse = True))
 		#selection des élites
-	parents=list(pop[0:50])
-	print(len(pop))
+	parents=list(pop[0:E])
+	#print(len(pop))
 		#selectionner les chanceux
-	for i in range (0,20):	
-		parents.append(pop[random.randint(50,(len(pop)-1))] )
+	for i in range (0,C):
+		parents.append(pop[random.randint(E,(len(pop)-1))] )
 
 	"""
-	for elem in parents : 
+	for elem in parents :
 		print(elem)
 	print(len(parents))
 	"""
 
 	#Créer les enfants
-
 	childrens=[]
-	while len(parents) != 0 : 
+	while len(parents) != 0 :
 		make_children(parents,childrens)
 
 	#Vérifier les enfants
 	for elem in childrens :
 		#print(elem)
 		repair_solution(elem)
-		
+
 	#remplacer les plus faibles de la population
 		##ajouter les enfants à la population
-	for elem in childrens : 
+	for elem in childrens :
 		pop.append(elem)
 
 		#classer la nouvelle population
 	pop = list(sorted(pop,key=lambda l:l[2], reverse = True))
-	pop = list(pop[0:-35])
-	
-	print("génération "+str(z)+" ; taille : " + str(len(pop)) )
-	print("meilleure solution :" + str(pop[0][2]) )
-	
-	#print("meilleure solution :" + str(pop[0][2]) )
-	
-	#recommencer
+	#depop
+	POPme = (C + E)/2
+	#POPme = (C + E) #if 2 child created 'make_child_2'
+	pop = list(pop[0:-int(POPme)])
 
+	#add data to graph
+	Generation.append(z)
+	Results.append(pop[0][2])
+	if (time.time() - start_time) > max_time - 1  : 
+		break
+	
+	z+=1
+
+	
+
+print("génération ; taille : " + str(len(pop)),flush=True)
+print("Valeur de la meilleure solution :" + str(pop[0][2]),flush=True)
+print("Meilleure solution :" + str(pop[0][0]),flush=True)
+print("Contraintes de la solution" + str(pop[0][1]), flush=True)
+
+print("Temps d execution : %s secondes ---" % (time.time() - start_time))
+input("Cliquez sur 'enter' pour afficher la courbe des resultats:")
+#evolution des solutions
+
+plt.plot(Generation, Results)
+plt.show()
